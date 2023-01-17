@@ -1,0 +1,59 @@
+train_dataset:
+  dataset:
+    name: natl-sst
+    args:
+      root_path: /data/jean.legoff/data/RESAC-SARGAS60/data/natl60_htuv_01102012_01102013.npz
+      repeat: 20
+      cache: bin
+  wrapper:
+    name: ssh-sst-sr-implicit-downsampled
+    args:
+      inp_size: 432
+      scale_max: 1
+      augment: true
+      sample_q: 2304
+  batch_size: 12
+val_dataset:
+  dataset:
+    name: natl-sst
+    args:
+      root_path: /data/jean.legoff/data/RESAC-SARGAS60/data/natl60_htuv_03_06_09_12-2008.npz
+      repeat: 100
+      cache: bin
+  wrapper:
+    name: ssh-sst-sr-implicit-downsampled
+    args:
+      inp_size: 432
+      scale_max: 1
+      sample_q: 2304
+  batch_size: 12
+model:
+  name: liif
+  args:
+    encoder_spec:
+      name: ssh-edsr-baseline
+      args:
+        no_upsampling: true
+    imnet_spec:
+      name: mlp
+      args:
+        out_dim: 1
+        hidden_list:
+        - 256
+        - 256
+        - 256
+        - 256
+optimizer:
+  name: adam
+  args:
+    lr: 0.0001
+epoch_max: 100
+multi_step_lr:
+  milestones:
+  - 20
+  - 40
+  - 60
+  - 80
+  gamma: 0.5
+epoch_val: 5
+epoch_save: 10

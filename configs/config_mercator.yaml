@@ -1,0 +1,77 @@
+train_dataset:
+  dataset:
+    name: mercator
+    args:
+      root_path: /data/jean.legoff/data/Copernicus/OutputData/data_LON-64-42-LAT+26+44/GLORYS12V1_PRODUCT_001_030/
+      repeat: 20
+      cache: bin
+      init_year: 1993
+      last_year: 2015
+  wrapper:
+    name: ssh-sr-implicit-downsampled
+    args:
+      inp_size: 16
+      scale_min: 10
+      scale_max: 13
+      augment: true
+      sample_q: 2304
+  batch_size: 16
+
+val_dataset:
+  dataset:
+    name: mercator
+    args:
+      root_path: /data/jean.legoff/data/Copernicus/OutputData/data_LON-64-42-LAT+26+44/GLORYS12V1_PRODUCT_001_030/
+      repeat: 50
+      cache: bin
+      init_year: 2016
+      last_year: 2019
+  wrapper:
+    name: ssh-sr-implicit-downsampled
+    args:
+      inp_size: 16
+      scale_min: 10
+      scale_max: 13
+      sample_q: 2304
+  batch_size: 16
+data_norm:
+  inp:
+    sub:
+    - 0.5
+    div:
+    - 0.5
+  gt:
+    sub:
+    - 0.5
+    div:
+    - 0.5
+model:
+  name: liif
+  args:
+    encoder_spec:
+      name: ssh-edsr-baseline
+      args:
+        no_upsampling: true
+    imnet_spec:
+      name: mlp
+      args:
+        out_dim: 1
+        hidden_list:
+        - 256
+        - 256
+        - 256
+        - 256
+optimizer:
+  name: adam
+  args:
+    lr: 0.0001
+epoch_max: 500
+multi_step_lr:
+  milestones:
+  - 200
+  - 400
+  - 600
+  - 800
+  gamma: 0.5
+epoch_val: 1
+epoch_save: 100
